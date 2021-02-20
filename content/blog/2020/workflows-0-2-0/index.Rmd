@@ -66,7 +66,7 @@ workflow() %>%
 library(modeltime)
 
 arima_spec <- arima_reg() %>%
-    set_engine("arima")
+  set_engine("arima")
 
 df <- data.frame(
   y = sample(5),

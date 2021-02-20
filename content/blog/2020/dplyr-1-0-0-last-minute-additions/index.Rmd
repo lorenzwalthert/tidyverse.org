@@ -40,8 +40,8 @@ There\'s a common confusion about the result of `summarise()`. How do you think 
 ```{r, message = FALSE}
 library(dplyr, warn.conflicts = FALSE)
 
-homeworld_species <- starwars %>% 
-  group_by(homeworld, species) %>% 
+homeworld_species <- starwars %>%
+  group_by(homeworld, species) %>%
   summarise(n = n())
 ```
 
@@ -56,8 +56,8 @@ That's because `summarise()` always peels off the last group, based on the logic
 Unfortunately, it would be very difficult to change this default now because a lot of code probably relies on it. Instead, we're doing the next best thing: exposing the default behaviour more explicitly and making it easier to change. In dplyr 1.0.0, the code above will display a message telling you how the result has been grouped:
 
 ```{r}
-homeworld_species <- starwars %>% 
-  group_by(homeworld, species) %>% 
+homeworld_species <- starwars %>%
+  group_by(homeworld, species) %>%
   summarise(n = n())
 ```
 
@@ -121,15 +121,15 @@ df %>% rows_update(tibble(a = 4, b = "d"))
 `rows_patch()` is a variant of `rows_update()` that will only update values in `x` that are `NA`.
 
 ```{r}
-df %>% 
+df %>%
   rows_patch(tibble(a = 2:3, b = "B"))
 ```
 
 If you want to update or insert, you can use `rows_upsert()`:
 
 ```{r}
-df %>% 
-  rows_upsert(tibble(a = 3, b = "c")) %>% 
+df %>%
+  rows_upsert(tibble(a = 3, b = "c")) %>%
   rows_upsert(tibble(a = 4, b = "d"))
 ```
 

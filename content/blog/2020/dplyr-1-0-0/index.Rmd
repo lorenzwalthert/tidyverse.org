@@ -88,16 +88,16 @@ The best way to find out about all the cool new features dplyr has to offer is t
 library(dplyr, warn.conflicts = FALSE)
 
 models <- tibble::tribble(
-  ~model_name,    ~ formula,
+  ~model_name, ~formula,
   "length-width", Sepal.Length ~ Petal.Width + Petal.Length,
-  "interaction",  Sepal.Length ~ Petal.Width * Petal.Length
+  "interaction", Sepal.Length ~ Petal.Width * Petal.Length
 )
 
-iris %>% 
-  nest_by(Species) %>% 
-  left_join(models, by = character()) %>% 
-  rowwise(Species, model_name) %>% 
-  mutate(model = list(lm(formula, data = data))) %>% 
+iris %>%
+  nest_by(Species) %>%
+  left_join(models, by = character()) %>%
+  rowwise(Species, model_name) %>%
+  mutate(model = list(lm(formula, data = data))) %>%
   summarise(broom::glance(model))
 ```
 

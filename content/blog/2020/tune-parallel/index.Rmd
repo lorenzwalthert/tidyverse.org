@@ -20,9 +20,9 @@ tags: [tidymodels,tune, parallelism]
 ```{r startup, include = FALSE}
 library(tidymodels)
 library(ggplot2)
-thm <- theme_bw() + 
+thm <- theme_bw() +
   theme(
-    panel.background = element_rect(fill = "transparent", colour = NA), 
+    panel.background = element_rect(fill = "transparent", colour = NA),
     plot.background = element_rect(fill = "transparent", colour = NA),
     legend.background = element_rect(fill = "transparent", colour = NA),
     legend.key = element_rect(fill = "transparent", colour = NA)
@@ -58,12 +58,12 @@ For illustration, let's suppose that we are tuning a set of model parameters (e.
 
 ```{r eval = FALSE}
 for (resample in resamples) {
-   # Create analysis and assessment sets
-   # Preprocess data (e.g. formula or recipe)
-   for (model in configurations) {
-      # Fit {model} to the {resample} analysis set
-      # Predict the {resample} assessment set
-   }
+  # Create analysis and assessment sets
+  # Preprocess data (e.g. formula or recipe)
+  for (model in configurations) {
+    # Fit {model} to the {resample} analysis set
+    # Predict the {resample} assessment set
+  }
 }
 ```
 
@@ -82,10 +82,10 @@ To illustrate how this approach utilizes parallel workers, we'll use a case wher
 ```{r grid-logging-rs, echo = FALSE, message = FALSE, fig.width=5, fig.height=4, out.width = "70%", dev = "svg"}
 load("resamples_times.RData")
 resamples_times %>%
-  dplyr::rename(operation = label) %>% 
+  dplyr::rename(operation = label) %>%
   ggplot(aes(y = id_alt, x = duration, fill = operation)) +
   geom_bar(stat = "identity", col = "black") +
-  labs(y = NULL, x = "Elapsed Time") + 
+  labs(y = NULL, x = "Elapsed Time") +
   scale_fill_brewer(palette = "Set2") +
   theme(legend.position = "top")
 ```
@@ -102,11 +102,11 @@ Another option that we can pursue is to take the two loops shown above and merge
 ```{r eval = FALSE}
 all_tasks <- crossing(resamples, configurations)
 
-for (iter in all_tasks) {                           
-   # Create analysis and assessment sets for {iter}
-   # Preprocess data (e.g. formula or recipe)
-   # Fit model {iter} to the {iter} analysis set
-   # Predict the {iter} assessment set
+for (iter in all_tasks) {
+  # Create analysis and assessment sets for {iter}
+  # Preprocess data (e.g. formula or recipe)
+  # Fit model {iter} to the {iter} analysis set
+  # Predict the {iter} assessment set
 }
 ```
 
@@ -119,11 +119,11 @@ Taking our previous example, here is what the allocations look like if the 35 ta
 ```{r grid-logging-all, echo = FALSE, message = FALSE, fig.height = 7, dev = "svg"}
 load("everything_times.RData")
 everything_times %>%
-  dplyr::rename(operation = label) %>% 
+  dplyr::rename(operation = label) %>%
   ggplot(aes(y = id, x = duration, fill = operation)) +
   geom_bar(stat = "identity", col = "black") +
-  facet_wrap(~ pid, nrow = 2) + 
-  labs(y = NULL, x = "Elapsed Time") + 
+  facet_wrap(~pid, nrow = 2) +
+  labs(y = NULL, x = "Elapsed Time") +
   scale_fill_brewer(palette = "Set2") +
   theme(legend.position = "top")
 ```
@@ -152,14 +152,14 @@ Let's consider the raw execution times:
 
 ```{r grid-par-times, echo = FALSE, fig.height = 4, dev = "svg"}
 load("xgb_times.RData")
-ggplot(times, aes(x = num_cores, y = elapsed, col = parallel_over, shape = parallel_over)) + 
-      geom_point(size = 3) + 
-      geom_line() +
-      facet_wrap(~ preprocessing) + 
-      labs(x = "Number of Workers", y = "Execution Time (s)") + 
-      scale_y_log10() + 
-      theme_bw() + 
-      theme(legend.position = "top")
+ggplot(times, aes(x = num_cores, y = elapsed, col = parallel_over, shape = parallel_over)) +
+  geom_point(size = 3) +
+  geom_line() +
+  facet_wrap(~preprocessing) +
+  labs(x = "Number of Workers", y = "Execution Time (s)") +
+  scale_y_log10() +
+  theme_bw() +
+  theme(legend.position = "top")
 ```
 
 Since there were only five resamples, the number of cores used when `parallel_over = "resamples"` is limited to five. 

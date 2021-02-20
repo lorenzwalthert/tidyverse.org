@@ -60,21 +60,23 @@ set.seed(100)
 resamp <- bootstraps(Sonar)
 
 # create a model specification
-model <- 
-  nearest_neighbor(neighbors = tune(), weight_func = tune(), 
-                   dist_power = tune()) %>% 
-  set_engine("kknn") %>% 
+model <-
+  nearest_neighbor(
+    neighbors = tune(), weight_func = tune(),
+    dist_power = tune()
+  ) %>%
+  set_engine("kknn") %>%
   set_mode("classification")
 
 # center and scale the data using a recipe
-norm_rec <- recipe(Class ~ ., data = Sonar) %>% 
+norm_rec <- recipe(Class ~ ., data = Sonar) %>%
   step_normalize(all_predictors())
 
 ctrl <- control_race(verbose_elim = TRUE)
 
 set.seed(101)
-sonar_race <- 
-  model %>% 
+sonar_race <-
+  model %>%
   tune_race_anova(norm_rec, resamples = resamp, grid = 20, control = ctrl)
 ```
 ```
@@ -129,8 +131,8 @@ For our KNN model:
 ctrl <- control_sim_anneal(verbose = TRUE)
 
 set.seed(102)
-sonar_sa <- 
-  model %>% 
+sonar_sa <-
+  model %>%
   tune_sim_anneal(norm_rec, resamples = resamp, iter = 25, control = ctrl)
 ```
 ```

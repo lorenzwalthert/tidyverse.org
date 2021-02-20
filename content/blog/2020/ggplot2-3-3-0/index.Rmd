@@ -29,7 +29,7 @@ While Dewey has worked on a lot of different parts of the ggplot2 code base, the
 library(ggplot2)
 
 p <- ggplot(mpg) +
-  geom_bar(aes(x = manufacturer)) + 
+  geom_bar(aes(x = manufacturer)) +
   theme(axis.text.x = element_text(size = 11))
 
 # Overlapping labels
@@ -38,13 +38,13 @@ plot(p)
 
 ```{r}
 # Use guide_axis to dodge the labels
-p + 
+p +
   scale_x_discrete(guide = guide_axis(n.dodge = 2))
 ```
 
 ```{r}
 # Or to remove overlapping labels
-p + 
+p +
   scale_x_discrete(guide = guide_axis(check.overlap = TRUE))
 ```
 
@@ -54,37 +54,37 @@ The resolving of overlapping tick labels is designed so that the first and last 
 While ggplot2 has a lot of different scales, it has only ever had two different scale *types*: continuous and discrete. This all changes with this release, as a new binning scale type has been added. A binning scale takes continuous data and makes it discrete by assigning each data point to a bin. It thus exists somewhere between the two existing scale types and e.g. allows continuous data to be used with discrete palettes. Being a fundamental scale type, it is available to all aesthetics, both positional and otherwise:
 
 ```{r}
-p <- ggplot(mpg) + 
+p <- ggplot(mpg) +
   geom_point(aes(displ, cty, size = hwy, colour = hwy))
 
-p + 
+p +
   scale_size_binned()
 ```
 
 ```{r}
-p + 
+p +
   scale_colour_binned()
 ```
 
 As can be seen, the legends reflect the binned nature of the scale by placing tick marks at the border between bins. By default the outermost ticks are not shown, indicating that the binning is open in both ends. This behavior can be controlled in the guide.
 
 ```{r}
-p + 
+p +
   scale_size_binned(guide = guide_bins(show.limits = TRUE))
 ```
 
 When used with a positional scale it acts in much the same way, placing data at the center of the bin they belong to:
 
 ```{r}
-p + 
+p +
   scale_x_binned()
 ```
 
 One of the benefits of this is that it is now a breeze to create histograms with tick-marks between the bars, as a histogram is effectively a binned scale with a bar geom:
 
 ```{r}
-ggplot(mpg) + 
-  geom_bar(aes(displ)) + 
+ggplot(mpg) +
+  geom_bar(aes(displ)) +
   scale_x_binned()
 ```
 
@@ -92,23 +92,23 @@ ggplot(mpg) +
 While we are messing with the foundation of ggplot2, we might as well challenge another paradigm, namely that certain geoms have a direction, and to change the direction you'd have to use `coord_flip()`. The prime example of this is a horizontal bar chart:
 
 ```{r}
-ggplot(mpg) + 
-  geom_bar(aes(x = manufacturer)) + 
+ggplot(mpg) +
+  geom_bar(aes(x = manufacturer)) +
   coord_flip()
 ```
 
 This approach has served ggplot2 well, and will continue to work in the future, but with this release we update all the directional stats and geoms to work in both directions. The direction of the stat/geom is deduced from the aesthetic mapping, so it should simply behave as expected. The example above can thus be rewritten to:
 
 ```{r}
-ggplot(mpg) + 
+ggplot(mpg) +
   geom_bar(aes(y = manufacturer))
 ```
 
 The direction determination is not only looking at which aesthetics are mapped, but also what they are mapped to, so most layers can be determined without ambiguity. In the presence of ambiguity, it is conservative and will default to the standard orientation. If you want to overwrite the direction, either because it fails to detect it, or because the geom/stat is ambiguous by nature, it can be set directly with the `orientation` argument:
 
 ```{r, message=FALSE}
-ggplot(mpg, aes(displ, hwy)) + 
-  geom_point() + 
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
   geom_smooth(orientation = "y")
 ```
 
@@ -134,12 +134,12 @@ ggplot(mpg, aes(class, hwy)) +
 Furthermore, it is now possible to perform multiple mapping for the same aesthetic, using the `stage()` function. This can be used to e.g. set alpha on the stroke of a polygon (the default is to only apply alpha to fill for polygon-type geoms):
 
 ```{r}
-ggplot(mpg) + 
+ggplot(mpg) +
   geom_bar(
     aes(
-      x = drv, 
+      x = drv,
       colour = stage(start = drv, after_scale = alpha(colour, 0.5))
-    ), 
+    ),
     fill = NA, size = 4
   )
 ```
@@ -176,15 +176,15 @@ volcano_long <- data.frame(
   z = as.vector(volcano)
 )
 
-ggplot(volcano_long, aes(x, y, z = z)) + 
-  geom_polygon(aes(fill = stat(level)), alpha = 0.5, stat = "contour") + 
+ggplot(volcano_long, aes(x, y, z = z)) +
+  geom_polygon(aes(fill = stat(level)), alpha = 0.5, stat = "contour") +
   guides(fill = "legend")
 ```
 
 There is so much wrong going on here that we won't go through it. In any case, this is all in the past because ggplot2 has moved on to using the new isoband package and now provides a geom for filled contours specifically:
 
 ```{r}
-ggplot(volcano_long, aes(x, y, z = z)) + 
+ggplot(volcano_long, aes(x, y, z = z)) +
   geom_contour_filled(aes(fill = stat(level)), alpha = 0.5)
 ```
 
@@ -193,8 +193,8 @@ We see that all the issues above have been fixed. Local minima are now represent
 One thing you might wonder about is the choice of legend. The filled contours are basically showing binned data, and we have just introduced a new binning scale - can this be merged? Yes and no. The binning has to happen at the stat level, since the contour calculation require un-binned data. So binning at the scale level is not possible. But the new bin legends have been written to understand the values created by the filled contour stat (as well as those returned by `cut()`) and can thus be used to show properly formatted discrete scales:
 
 ```{r}
-ggplot(volcano_long, aes(x, y, z = z)) + 
-  geom_contour_filled(aes(fill = stat(level))) + 
+ggplot(volcano_long, aes(x, y, z = z)) +
+  geom_contour_filled(aes(fill = stat(level))) +
   guides(fill = guide_colorsteps(barheight = unit(10, "cm")))
 ```
 
@@ -204,9 +204,9 @@ This also mean that it is possible to use pre-binned data with the new bin guide
 There are also a range of smaller features in this release that may not be earth shattering, but could mean the world to some. First among these is the new ability to position the plot title, subtitle and caption, flush with the left or right side of the full plot, instead of aligned with the plotting area. This is done with the new `plot.title.position` and `plot.caption.position` theme setting, which takes either `"panel"` (default, old-style) or `"plot"` as values:
 
 ```{r}
-ggplot(mpg) + 
-  geom_point(aes(hwy, displ)) + 
-  ggtitle("The placement of this title may surprise you") + 
+ggplot(mpg) +
+  geom_point(aes(hwy, displ)) +
+  ggtitle("The placement of this title may surprise you") +
   theme(plot.title.position = "plot")
 ```
 
@@ -218,7 +218,7 @@ Lastly, we have now made a change in how `geom_area()`/`geom_density()` and `geo
 
 ```{r}
 huron <- data.frame(year = 1875:1972, level = as.vector(LakeHuron))
-ggplot(huron, aes(year)) + 
+ggplot(huron, aes(year)) +
   geom_ribbon(aes(ymin = level - 10, ymax = level + 10), fill = "grey", colour = "black")
 ```
 

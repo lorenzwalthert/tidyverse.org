@@ -59,7 +59,10 @@ dplyr 1.0.0 contains very few backward incompatible changes, but it does make a 
 
 ```{r}
 df <- tibble(x = c(a = 1, b = 2))
-df %>% filter(x == 1) %>% .$x %>% str()
+df %>%
+  filter(x == 1) %>%
+  .$x %>%
+  str()
 ```
 
 (With dplyr 0.8.5, this returns an unnamed vector.)
@@ -80,15 +83,15 @@ One of the subtlest, but furthest reaching changes for package authors is that w
     would pass:
   
     ```{r, eval = FALSE}
-    expect_equal(tibble(x = 1), data.frame(x = 1))
+expect_equal(tibble(x = 1), data.frame(x = 1))
     ```
 
 *   By default, it ignores column and row order so the following tests
     would pass:
 
     ```{r, eval = FALSE}
-    expect_equal(tibble(x = 1:2), tibble(x = 2:1))
-    expect_equal(tibble(x = 1, y = 2), tibble(y = 2, x = 1))
+expect_equal(tibble(x = 1:2), tibble(x = 2:1))
+expect_equal(tibble(x = 1, y = 2), tibble(y = 2, x = 1))
     ```
 
 The first issue was a genuine bug; the second one was something that I must've thought was a good idea at the time, but looking back at it was clearly a mistake. We've been aware of this problem for a while, but knew that fixing it would cause a large number of CRAN packages to fail to pass `R CMD check`. We decided that the 1.0.0 release was a good time to rip the band-aid off.

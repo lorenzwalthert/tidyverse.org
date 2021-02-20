@@ -54,17 +54,21 @@ p <- ggplot(na.omit(penguins), aes(x = flipper_length_mm, y = body_mass_g)) +
     aes(color = species, shape = species),
     size = 3,
     alpha = 0.8
-  ) + 
+  ) +
   ggforce::geom_mark_ellipse(
-    aes(filter = species == "Gentoo", 
-        description = "Gentoo penguins are generally bigger in size")
-  ) + 
-  labs(x = "Flipper Length [mm]", y = "Body Mass [g]",  colour = "Species", 
-       shape = "Species")
+    aes(
+      filter = species == "Gentoo",
+      description = "Gentoo penguins are generally bigger in size"
+    )
+  ) +
+  labs(
+    x = "Flipper Length [mm]", y = "Body Mass [g]", colour = "Species",
+    shape = "Species"
+  )
 
-pngfile <- fs::path(knitr::fig_path(),  "basis.png")
+pngfile <- fs::path(knitr::fig_path(), "basis.png")
 
-# I'm explicitly calling the device functions so you can see the dimensions 
+# I'm explicitly calling the device functions so you can see the dimensions
 # used
 agg_png(pngfile, width = 20, height = 12, units = "cm", res = 300)
 plot(p)
@@ -79,7 +83,7 @@ This looks good, but remember we want to use this on a poster. A poster is usual
 With that in mind we quickly size up our plot:
 
 ```{r, message=FALSE, out.width=""}
-pngfile <- fs::path(knitr::fig_path(),  "large_basis.png")
+pngfile <- fs::path(knitr::fig_path(), "large_basis.png")
 agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300)
 plot(p)
 invisible(dev.off())
@@ -101,9 +105,9 @@ The discussion above is especially relevant to raster output since they don't re
 One approach to fixing this is by changing the theme settings of the plot, so that they work better for a larger size:
 
 ```{r, message=FALSE, out.width=""}
-p1 <- p + 
+p1 <- p +
   theme_gray(base_size = 33)
-pngfile <- fs::path(knitr::fig_path(),  "theming.png")
+pngfile <- fs::path(knitr::fig_path(), "theming.png")
 agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300)
 plot(p1)
 invisible(dev.off())
@@ -120,17 +124,21 @@ p1 <- ggplot(na.omit(penguins), aes(x = flipper_length_mm, y = body_mass_g)) +
     aes(color = species, shape = species),
     size = 9,
     alpha = 0.8
-  ) + 
+  ) +
   ggforce::geom_mark_ellipse(
-    aes(filter = species == "Gentoo", 
-        description = "Gentoo penguins are generally bigger in size"),
+    aes(
+      filter = species == "Gentoo",
+      description = "Gentoo penguins are generally bigger in size"
+    ),
     size = 1.5,
     label.fontsize = 36
-  ) + 
-  labs(x = "Flipper Length [mm]", y = "Body Mass [g]",  colour = "Species", 
-       shape = "Species") + 
+  ) +
+  labs(
+    x = "Flipper Length [mm]", y = "Body Mass [g]", colour = "Species",
+    shape = "Species"
+  ) +
   theme_gray(base_size = 33)
-pngfile <- fs::path(knitr::fig_path(),  "theming2.png")
+pngfile <- fs::path(knitr::fig_path(), "theming2.png")
 agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300)
 plot(p1)
 invisible(dev.off())
@@ -155,7 +163,7 @@ c(60, 36) *
 We can now use these values directly in our device and change the resolution of the device to trick it into thinking that text etc should be rendered at a larger size
 
 ```{r, message=FALSE, out.width=""}
-pngfile <- fs::path(knitr::fig_path(),  "resolution.png")
+pngfile <- fs::path(knitr::fig_path(), "resolution.png")
 agg_png(pngfile, width = 7087, height = 4252, units = "px", res = 900)
 plot(p)
 invisible(dev.off())
@@ -170,7 +178,7 @@ Depending on your temperament this may be a perfect solution. To me, I think the
 Seeing that there is no single perfect solution to fixing this with the tools at our disposal, I've added a new argument to the ragg devices called `scaling`. It's a multiplier that is applied to all absolute sizes, without interfering with the encoded dimensions of the output. Since we have increased the dimensions 3 times we set `scaling = 3` to make sure that the absolute sized elements are keeping their relative size.
 
 ```{r, message=FALSE, out.width=""}
-pngfile <- fs::path(knitr::fig_path(),  "scaling.png")
+pngfile <- fs::path(knitr::fig_path(), "scaling.png")
 agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300, scaling = 3)
 plot(p)
 invisible(dev.off())
@@ -182,11 +190,11 @@ As can be seen, the new argument makes it very easy to reclaim the look of the p
 Remember that the scaling factor of `3` was simply chosen to fit our presumed viewing distance and should not be repeated without thought. Another example would be to create a small version of the plot, e.g. for a thumbnail on a webpage. While there is no harm in manually scaling down a raster image, you may find that especially text is more readable when rendered to the desired size directly. To show this off we'll make a half-sized version of our plot as well. To spruce it up we'll use `ggsave()` instead of calling the ragg device directly. Let's see how it looks without using scaling first:
 
 ```{r, message=FALSE, out.width="50%"}
-pngfile <- fs::path(knitr::fig_path(),  "small")
+pngfile <- fs::path(knitr::fig_path(), "small")
 ggsave(
-  pngfile, 
-  p, 
-  device = agg_png, 
+  pngfile,
+  p,
+  device = agg_png,
   width = 10, height = 6, units = "cm", res = 300
 )
 knitr::include_graphics(pngfile)
@@ -195,11 +203,11 @@ knitr::include_graphics(pngfile)
 As we can see, everything feels oversized for the plot, and the margins takes up way too much relative space. Using `scaling` we quickly resolve this:
 
 ```{r, message=FALSE, out.width="50%"}
-pngfile <- fs::path(knitr::fig_path(),  "downscaling.png")
+pngfile <- fs::path(knitr::fig_path(), "downscaling.png")
 ggsave(
-  pngfile, 
-  p, 
-  device = agg_png, 
+  pngfile,
+  p,
+  device = agg_png,
   width = 10, height = 6, units = "cm", res = 300,
   scaling = 0.5
 )

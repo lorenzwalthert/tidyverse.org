@@ -68,8 +68,8 @@ We can create a `cor_df` object containing the pairwise correlations between a f
 ```{r message = FALSE}
 library(palmerpenguins)
 
-penguins_cor <- penguins %>% 
-  select(bill_length_mm, bill_depth_mm, flipper_length_mm) %>% 
+penguins_cor <- penguins %>%
+  select(bill_length_mm, bill_depth_mm, flipper_length_mm) %>%
   correlate()
 
 penguins_cor
@@ -80,7 +80,7 @@ penguins_cor
 Previously, the default behavior of `rplot()` was that the variables were displayed in alphabetical order in the output. This was an artifact of using `ggplot2` and inheriting its behavior. The new default is to retain the ordering of variables in the input data: 
 
 ```{r message = FALSE}
-rplot(penguins_cor) 
+rplot(penguins_cor)
 ```
 
 If alphabetical ordering is desired, set `.order` to "alphabet": 
@@ -116,14 +116,14 @@ cov_df
 The resulting data frame behaves just like one returned by `correlate()`, except that it is populated with covariance values rather than correlations. This means we still have access to all corrr's other tooling when working with it. We can still use `shave()` for example to remove duplication, which will set the upper triangle of values to `NA`.
 
 ```{r}
-cov_df %>% 
+cov_df %>%
   shave()
 ```
 
 Similarly, we can still use `stretch()` to get the resulting data frame into a longer format:
 
 ```{r}
-cov_df %>% 
+cov_df %>%
   stretch()
 ```
 
@@ -132,7 +132,7 @@ The first part of the name ("colpair_") comes from the fact that we are comparin
 As such, any function passed to `colpair_map()` must accept a vector for both its first and second arguments. To illustrate, let's say we wanted to run a series t-tests to see which of our variables are significantly related to one another. We can write a function to do so as follows:
 
 ```{r}
-calc_ttest_p_value <- function(vec_a, vec_b){
+calc_ttest_p_value <- function(vec_a, vec_b) {
   t.test(vec_a, vec_b)$p.value
 }
 ```

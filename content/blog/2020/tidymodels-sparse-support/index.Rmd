@@ -18,9 +18,11 @@ tags: [tidymodels,tune,parsnip,hardhat]
 
 ```{r setup, include=FALSE}
 library(knitr)
-knitr::opts_chunk$set(cache = TRUE, cache.lazy = FALSE, warning = FALSE, 
-                      message = FALSE, echo = TRUE, dpi = 180,
-                      fig.width = 8, fig.height = 5)
+knitr::opts_chunk$set(
+  cache = TRUE, cache.lazy = FALSE, warning = FALSE,
+  message = FALSE, echo = TRUE, dpi = 180,
+  fig.width = 8, fig.height = 5
+)
 library(tidyverse)
 theme_set(theme_minimal())
 ```
@@ -57,8 +59,10 @@ We can also transform these results to a wide format, often a good fit when the 
 ```{r R.options = list(tibble.print_min=15, tibble.max_extra_cols=20)}
 wide_reviews <- tidy_reviews %>%
   select(product, word, tf_idf) %>%
-  pivot_wider(names_from = word, names_prefix = "word_",
-              values_from = tf_idf, values_fill = 0)
+  pivot_wider(
+    names_from = word, names_prefix = "word_",
+    values_from = tf_idf, values_fill = 0
+  )
 
 wide_reviews
 ```
@@ -104,7 +108,7 @@ library(textrecipes)
 
 text_rec <-
   recipe(score ~ review, data = training_data) %>%
-  step_tokenize(review)  %>%
+  step_tokenize(review) %>%
   step_stopwords(review) %>%
   step_tokenfilter(review, max_tokens = 1e3) %>%
   step_tfidf(review)
@@ -123,12 +127,12 @@ The regularized modeling of the glmnet package is an example of an algorithm tha
 Let's put together two workflows, one using the sparse blueprint and one using the default behavior.
 
 ```{r}
-wf_sparse <- 
+wf_sparse <-
   workflow() %>%
   add_recipe(text_rec, blueprint = sparse_bp) %>%
   add_model(lasso_spec)
-  
-wf_default <- 
+
+wf_default <-
   workflow() %>%
   add_recipe(text_rec) %>%
   add_model(lasso_spec)
@@ -144,8 +148,8 @@ food_folds <- vfold_cv(training_data, v = 3)
 
 results <- bench::mark(
   iterations = 10, check = FALSE,
-  sparse = fit_resamples(wf_sparse, food_folds),  
-  default = fit_resamples(wf_default, food_folds), 
+  sparse = fit_resamples(wf_sparse, food_folds),
+  default = fit_resamples(wf_default, food_folds),
 )
 
 results

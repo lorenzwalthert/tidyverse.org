@@ -47,7 +47,7 @@ To get a sense for what this means, take this toy dataset:
 library(dplyr, warn.conflicts = FALSE)
 
 df <- tibble(
-  grp = rep(1:2, each = 5), 
+  grp = rep(1:2, each = 5),
   x = c(rnorm(5, -0.25, 1), rnorm(5, 0, 1.5)),
   y = c(rnorm(5, 0.25, 1), rnorm(5, 0, 0.5)),
 )
@@ -57,16 +57,16 @@ df
 You can now use summaries that return multiple values:
 
 ```{r}
-df %>% 
-  group_by(grp) %>% 
+df %>%
+  group_by(grp) %>%
   summarise(rng = range(x))
 ```
 
 Or return multiple columns from a single summary expression: 
 
 ```{r}
-df %>% 
-  group_by(grp) %>% 
+df %>%
+  group_by(grp) %>%
   summarise(tibble(min = min(x), mean = mean(x)))
 ```
 (This isn't very useful when used directly, but as you'll see shortly, it's really useful inside of functions.)
@@ -78,8 +78,8 @@ To put this another way, before dplyr 1.0.0, each summary had to be a single val
 To demonstrate this new flexibility in a more useful situation, let's take a look at `quantile()`. `quantile()` was hard to use previously because it returns multiple values. Now it's straightforward:
 
 ```{r}
-df %>% 
-  group_by(grp) %>% 
+df %>%
+  group_by(grp) %>%
   summarise(x = quantile(x, c(0.25, 0.5, 0.75)), q = c(0.25, 0.5, 0.75))
 ```
 
@@ -89,8 +89,8 @@ It would be nice to be able to reduce the duplication in this code so that we do
 quibble <- function(x, q = c(0.25, 0.5, 0.75)) {
   tibble(x = quantile(x, q), q = q)
 }
-df %>% 
-  group_by(grp) %>% 
+df %>%
+  group_by(grp) %>%
   summarise(quibble(x, c(0.25, 0.5, 0.75)))
 ```
 
@@ -101,8 +101,8 @@ quibble2 <- function(x, q = c(0.25, 0.5, 0.75)) {
   tibble("{{ x }}" := quantile(x, q), "{{ x }}_q" := q)
 }
 
-df %>% 
-  group_by(grp) %>% 
+df %>%
+  group_by(grp) %>%
   summarise(quibble2(y, c(0.25, 0.5, 0.75)))
 ```
 
@@ -113,8 +113,8 @@ One note of caution: naming the output columns in a function like this is a surp
 We've been careful not to name the result of `quibble()` in the code above. That's because when we leave the name off, the data frame result is automatically **unpacked** so each column returned by `quibble()` becomes a column in the result. What happens if we name the output?
 
 ```{r}
-out <- df %>% 
-  group_by(grp) %>% 
+out <- df %>%
+  group_by(grp) %>%
   summarise(y = quibble2(y, c(0.25, 0.75)))
 out
 ```
@@ -147,8 +147,8 @@ In combination with [`rowwise()`](http://dplyr.tidyverse.org/dev/articles/rowwis
 For example, to read all the all the `.csv` files in the current directory, you could write:
 
 ```{r, eval = FALSE}
-tibble(path = dir(pattern = "\\.csv$")) %>% 
-  rowwise(path) %>% 
+tibble(path = dir(pattern = "\\.csv$")) %>%
+  rowwise(path) %>%
   summarise(read_csv(path))
 ```
 
@@ -159,17 +159,17 @@ I feel deeply ambivalent about this code: it seems rather forced to claim that `
 There were a couple of previous approach to solving the quantile problem illustrated above. One way was to create a list-column and then unnest it:
 
 ```{r}
-df %>% 
-  group_by(grp) %>% 
-  summarise(y = list(quibble(y, c(0.25, 0.75)))) %>% 
+df %>%
+  group_by(grp) %>%
+  summarise(y = list(quibble(y, c(0.25, 0.75)))) %>%
   tidyr::unnest(y)
 ```
 
 Or to use `do()`:
 
 ```{r}
-df %>% 
-  group_by(grp) %>% 
+df %>%
+  group_by(grp) %>%
   do(quibble(.$y, c(0.25, 0.75)))
 ```
 

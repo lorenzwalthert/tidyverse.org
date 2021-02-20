@@ -37,9 +37,9 @@ library(ggparty)
 library(partykit)
 data(penguins)
 
-thm <- theme_bw() + 
+thm <- theme_bw() +
   theme(
-    panel.background = element_rect(fill = "transparent", colour = NA), 
+    panel.background = element_rect(fill = "transparent", colour = NA),
     plot.background = element_rect(fill = "transparent", colour = NA),
     legend.position = "top",
     legend.background = element_rect(fill = "transparent", colour = NA),
@@ -178,9 +178,9 @@ A full one-hot-encoding method is now available via parsnip using a contrast fun
 
 ```{r not-so-hot}
 library(tidymodels)
-unique_levels <- 
-  penguins %>% 
-  select(species, island) %>% 
+unique_levels <-
+  penguins %>%
+  select(species, island) %>%
   distinct()
 
 levels(unique_levels$species)
@@ -230,7 +230,7 @@ cart_spec <-
   set_engine("rpart") %>%
   set_mode("regression")
 
-cart_fit <- 
+cart_fit <-
   cart_spec %>%
   fit(body_mass_g ~ species + island, data = penguins)
 

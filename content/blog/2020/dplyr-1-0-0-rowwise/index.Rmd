@@ -41,10 +41,10 @@ Today, I wanted to talk a little bit about the renewed `rowwise()` function that
 library(dplyr, warn.conflicts = FALSE)
 
 df <- tibble(
-  student_id = 1:4, 
-  test1 = 10:13, 
-  test2 = 20:23, 
-  test3 = 30:33, 
+  student_id = 1:4,
+  test1 = 10:13,
+  test2 = 20:23,
+  test3 = 30:33,
   test4 = 40:43
 )
 df
@@ -95,8 +95,8 @@ Another family of summary functions have "parallel" extensions where you can pro
 
 ```{r}
 df %>% mutate(
-  min = pmin(test1, test2, test3, test4), 
-  max = pmax(test1, test2, test3, test4), 
+  min = pmin(test1, test2, test3, test4),
+  max = pmax(test1, test2, test3, test4),
   string = paste(test1, test2, test3, test4, sep = "-")
 )
 ```
@@ -125,8 +125,8 @@ df
 When you have list-columns in a row-wise data frame, you can easily compute with each element of the list:
 
 ```{r}
-df %>% 
-  rowwise() %>% 
+df %>%
+  rowwise() %>%
   summarise(
     x_length = length(x),
     y_type = typeof(y),
@@ -146,10 +146,10 @@ The basic idea of using `rowwise()` to perform simulation is to store all your s
 
 ```{r}
 df <- tribble(
-  ~id, ~ n, ~ min, ~ max,
-    1,   3,     0,     1,
-    2,   2,    10,   100,
-    3,   2,   100,  1000,
+  ~id, ~n, ~min, ~max,
+  1, 3, 0, 1,
+  2, 2, 10, 100,
+  3, 2, 100, 1000,
 )
 ```
 

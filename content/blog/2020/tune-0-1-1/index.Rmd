@@ -32,9 +32,9 @@ theme_set(theme_bw())
 library(doMC)
 registerDoMC(cores = parallel::detectCores())
 
-thm <- theme_bw() + 
+thm <- theme_bw() +
   theme(
-    panel.background = element_rect(fill = "transparent", colour = NA), 
+    panel.background = element_rect(fill = "transparent", colour = NA),
     plot.background = element_rect(fill = "transparent", colour = NA),
     legend.background = element_rect(fill = "transparent", colour = NA),
     legend.key = element_rect(fill = "transparent", colour = NA)
@@ -64,9 +64,9 @@ data_folds <-
     cumulative = FALSE
   )
 
-svm_mod <- 
-  svm_rbf(cost = tune(), rbf_sigma = tune("kernel parameter")) %>% 
-  set_mode("regression") %>% 
+svm_mod <-
+  svm_rbf(cost = tune(), rbf_sigma = tune("kernel parameter")) %>%
+  set_mode("regression") %>%
   set_engine("kernlab")
 
 ctrl <- control_grid(save_pred = TRUE)
@@ -83,7 +83,7 @@ non_regular_grid <-
 ```
 
 ```{r irreg-plot-old, eval = FALSE, dev = 'svg', dev.args = list(bg = "transparent"), fig.align='center', fig.height=4}
-autoplot(non_regular_grid, metric = "rmse") + 
+autoplot(non_regular_grid, metric = "rmse") +
   ggtitle("old method, irregular grid")
 ```
 <img src="figure/irreg-plot-old-1.svg" title="plot of chunk irreg-plot-old" alt="plot of chunk irreg-plot-old" style="display: block; margin: auto;" />
@@ -97,9 +97,9 @@ Not bad but it could be improved in a few ways:
 What happens when a regular (i.e. factorial) grid is used? 
 
 ```{r ap-reg, cache = TRUE}
-grid <- 
-  svm_mod %>% 
-  parameters() %>% 
+grid <-
+  svm_mod %>%
+  parameters() %>%
   grid_regular(levels = c(3, 12))
 
 grid
@@ -117,7 +117,7 @@ regular_grid <-
 
 
 ```{r reg-plot-old, eval = FALSE, dev = 'svg', dev.args = list(bg = "transparent"), fig.align='center', fig.height=4}
-autoplot(regular_grid, metric = "rmse") + 
+autoplot(regular_grid, metric = "rmse") +
   ggtitle("old method, regular grid")
 ```
 <img src="figure/reg-plot-old-1.svg" title="plot of chunk reg-plot-old" alt="plot of chunk reg-plot-old" style="display: block; margin: auto;" />
@@ -127,7 +127,7 @@ This visualization also could be improved, since there might be a pattern in one
 The new version of tune creates improved versions of both of these plots: 
 
 ```{r ap-irr-new, dev = 'svg', dev.args = list(bg = "transparent"), fig.align='center', fig.height=4}
-autoplot(non_regular_grid, metric = "rmse") + 
+autoplot(non_regular_grid, metric = "rmse") +
   ggtitle("new method, irregular grid")
 ```
 
@@ -136,14 +136,14 @@ This tells a completely different story than the previous version where the para
 The regular grid results are also much better and tell a cleaner story: 
 
 ```{r ap-reg-new, dev = 'svg', dev.args = list(bg = "transparent"), fig.align='center', fig.height=4, fig.width=5.5}
-autoplot(regular_grid, metric = "rmse") + 
+autoplot(regular_grid, metric = "rmse") +
   ggtitle("new method, regular grid")
 ```
 
 Extra arguments can be passed when a numeric grouping column is used;l these are given to `format()`. To avoid scientific notation:
 
 ```{r ap-reg-new-new, dev = 'svg', dev.args = list(bg = "transparent"), fig.align='center', fig.height=4, fig.width=5.5}
-autoplot(regular_grid, metric = "rmse", digits = 3, scientific = FALSE) + 
+autoplot(regular_grid, metric = "rmse", digits = 3, scientific = FALSE) +
   ggtitle("Formatting for coloring column")
 ```
 
@@ -155,13 +155,13 @@ One helpful visualization of the fit of a regression model is to plot the true o
 best_values <- select_best(regular_grid, metric = "rmse")
 best_values
 
-holdout_predictions <- 
-  regular_grid %>% 
+holdout_predictions <-
+  regular_grid %>%
   collect_predictions(parameters = best_values)
 holdout_predictions
 
-ggplot(holdout_predictions, aes(x = ridership, y = .pred)) + 
-  geom_abline(lty = 2) + 
+ggplot(holdout_predictions, aes(x = ridership, y = .pred)) +
+  geom_abline(lty = 2) +
   geom_point(alpha = 0.3)
 ```
 
@@ -169,9 +169,9 @@ This is very helpful but there are a few possible improvements. The new version 
 
 
 ```{r obs-pred-new, dev = 'svg', dev.args = list(bg = "transparent"), eval = TRUE, fig.align='center', fig.height=4}
-ggplot(holdout_predictions, aes(x = ridership, y = .pred)) + 
-  geom_abline(lty = 2) + 
-  geom_point(alpha = 0.3) + 
+ggplot(holdout_predictions, aes(x = ridership, y = .pred)) +
+  geom_abline(lty = 2) +
+  geom_point(alpha = 0.3) +
   coord_obs_pred()
 ```
 
@@ -185,14 +185,15 @@ To demonstrate, we'll use the time series data above, but this time we'll optimi
 Since parsnip has a pre-defined list of models and engines, we've gone ahead and set up the infrastructure for tuning most engine-specific values. For example, in the above example we could tune two regularization parameters specific to ranger.
 
 ```{r reg-param-tune}
-rf_mod <- 
+rf_mod <-
   rand_forest(min_n = tune()) %>%
   set_mode("regression") %>%
-  set_engine("ranger", 
-             regularization.factor = tune(), 
-             regularization.usedepth = tune())
+  set_engine("ranger",
+    regularization.factor = tune(),
+    regularization.usedepth = tune()
+  )
 
-# Are there dials objects to work with these? 
+# Are there dials objects to work with these?
 rf_param <- parameters(rf_mod)
 rf_param
 ```
@@ -218,7 +219,7 @@ ranger_params <-
     control = ctrl
   )
 
-autoplot(ranger_params, metric = "rmse") + 
+autoplot(ranger_params, metric = "rmse") +
   theme(legend.position = "top")
 ```
 
@@ -231,10 +232,10 @@ I'm sure that we missed someone's favorite engine-specific parameter so please p
 When model tuning is conducted, the tune package now saves a new column in the output called `.config`. This column is a qualitative identification column for unique tuning parameter combinations. It often reflects what is being tuned. A value of `.config = "Recipe1_Model3"` indicates that the first recipe tuning parameter set is being evaluated in conjunction with the third set of model parameters. Here's an example from the random forest model that we just fit: 
 
 ```{r rf-config}
-ranger_params %>% 
-  collect_metrics() %>% 
+ranger_params %>%
+  collect_metrics() %>%
   # get the unique tuning parameter combinations:
-  select(min_n, regularization.factor, regularization.usedepth, .config) %>% 
+  select(min_n, regularization.factor, regularization.usedepth, .config) %>%
   distinct()
 ```
 

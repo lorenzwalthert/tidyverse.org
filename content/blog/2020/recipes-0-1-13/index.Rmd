@@ -31,9 +31,9 @@ You can see a full list of changes in the [release notes](https://recipes.tidymo
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidymodels)
-thm <- theme_bw() + 
+thm <- theme_bw() +
   theme(
-    panel.background = element_rect(fill = "transparent", colour = NA), 
+    panel.background = element_rect(fill = "transparent", colour = NA),
     plot.background = element_rect(fill = "transparent", colour = NA),
     legend.background = element_rect(fill = "transparent", colour = NA),
     legend.key = element_rect(fill = "transparent", colour = NA)
@@ -64,21 +64,21 @@ split <- initial_split(meats)
 meat_tr <- training(split)
 meat_te <- testing(split)
 
-pca_rec <- 
-  recipe(water + fat + protein ~ ., data = meat_tr) %>% 
-  step_normalize(all_predictors()) %>% 
-  step_pca(all_predictors(), num_comp = 10, id = "pca") %>% 
+pca_rec <-
+  recipe(water + fat + protein ~ ., data = meat_tr) %>%
+  step_normalize(all_predictors()) %>%
+  step_pca(all_predictors(), num_comp = 10, id = "pca") %>%
   prep()
 
 var_info <- tidy(pca_rec, id = "pca", type = "variance")
 
 table(var_info$terms)
 
-var_info %>% 
-  dplyr::filter(terms == "percent variance") %>% 
-  ggplot(aes(x = component, y = value)) + 
-  geom_bar(stat = "identity") + 
-  xlim(c(0, 10)) + 
+var_info %>%
+  dplyr::filter(terms == "percent variance") %>%
+  ggplot(aes(x = component, y = value)) +
+  geom_bar(stat = "identity") +
+  xlim(c(0, 10)) +
   ylab("% of Total Variation")
 ```
 
@@ -90,26 +90,28 @@ Previously, it used the [pls package](https://github.com/bhmevik/pls) to do the 
 For our previous example, let's look at the protein outcome and build a recipe: 
 
 ```{r pls, fig.height = 3, fig.align="center", fig.height=4, dev = 'svg', dev.args = list(bg = "transparent")}
-pls_rec <- 
-  recipe(water + fat + protein ~ ., data = meat_tr) %>% 
-  step_normalize(all_predictors()) %>% 
+pls_rec <-
+  recipe(water + fat + protein ~ ., data = meat_tr) %>%
+  step_normalize(all_predictors()) %>%
   step_pls(
     all_predictors(),
     outcome = vars(protein),
     num_comp = 3,
     predictor_prop = 0.75,
     id = "pls"
-  ) %>% 
+  ) %>%
   prep()
 
-# for new data: 
+# for new data:
 bake(pls_rec, meat_te, protein, starts_with("PLS")) %>%
-  tidyr::pivot_longer(cols = c(-protein),
-                      names_to = "component",
-                      values_to = "values") %>% 
-  ggplot(aes(x = values, y = protein)) + 
-  geom_point(alpha = 0.5) + 
-  facet_wrap(~ component, scale = "free_x") +
+  tidyr::pivot_longer(
+    cols = c(-protein),
+    names_to = "component",
+    values_to = "values"
+  ) %>%
+  ggplot(aes(x = values, y = protein)) +
+  geom_point(alpha = 0.5) +
+  facet_wrap(~component, scale = "free_x") +
   xlab("PLS Score")
 ```
 
@@ -124,8 +126,8 @@ tidy(pls_rec, id = "pls") %>%
     mid = "white",
     high = "#2166AC",
     limits = c(-0.4, 0.4)
-  ) + 
-  theme(axis.text.y = element_blank()) + 
+  ) +
+  theme(axis.text.y = element_blank()) +
   ylab("Predictors")
 ```
 

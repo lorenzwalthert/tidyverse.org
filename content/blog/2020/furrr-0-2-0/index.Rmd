@@ -44,7 +44,7 @@ furrr now includes a parallel version of `purrr::walk()`. This was a highly requ
 ```{r}
 plan(multisession, workers = 2)
 
-future_walk(1:5, ~print(paste0("Iteration: ", .x)))
+future_walk(1:5, ~ print(paste0("Iteration: ", .x)))
 ```
 
 ```{r, echo=FALSE}
@@ -78,14 +78,14 @@ x <- replicate(n = 10, runif(20), simplify = FALSE)
 
 with_progress({
   p <- progressor(steps = length(x))
-  
-  result <- future_map(x, ~{
+
+  result <- future_map(x, ~ {
     p()
     Sys.sleep(.2)
     sum(.x)
   })
 })
-#> |=====================                                               |  20%
+# > |=====================                                               |  20%
 ```
 
 progressr is a relatively new package, and its API isn't perfectly compatible with furrr and tidyverse workflows yet, but I'd encourage you to read the previously mentioned vignette about [progress notifications with progressr](https://davisvaughan.github.io/furrr/articles/articles/progress.html) to learn more. In the future, furrr will likely have an even tighter integration with progressr to make this even easier. 

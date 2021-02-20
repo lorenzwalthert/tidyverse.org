@@ -38,21 +38,21 @@ Today, I wanted to talk a little bit about the new `across()` function that make
 It's often useful to perform the same operation on multiple columns, but copying and pasting is both tedious and error prone:
 
 ```{r, eval = FALSE}
-df %>% 
-  group_by(g1, g2) %>% 
+df %>%
+  group_by(g1, g2) %>%
   summarise(a = mean(a), b = mean(b), c = mean(c), d = mean(c))
 ```
 
 You can now rewrite such code using `across()`, which lets you apply a transformation to multiple variables selected with the same syntax as [`select()` and `rename()`](https://www.tidyverse.org/blog/2020/03/dplyr-1-0-0-select-rename-relocate/#select-and-renaming):
 
 ```{r, eval = FALSE}
-df %>% 
-  group_by(g1, g2) %>% 
+df %>%
+  group_by(g1, g2) %>%
   summarise(across(a:d, mean))
 
 # or with a function
-df %>% 
-  group_by(g1, g2) %>% 
+df %>%
+  group_by(g1, g2) %>%
   summarise(across(where(is.numeric), mean))
 ```
 
@@ -74,17 +74,17 @@ Here are a couple of examples of `across()` used with `summarise()`:
 ```{r}
 library(dplyr, warn.conflicts = FALSE)
 
-starwars %>% 
+starwars %>%
   summarise(across(where(is.character), n_distinct))
 
-starwars %>% 
-  group_by(species) %>% 
-  filter(n() > 1) %>% 
+starwars %>%
+  group_by(species) %>%
+  filter(n() > 1) %>%
   summarise(across(c(sex, gender, homeworld), n_distinct))
 
-starwars %>% 
-  group_by(homeworld) %>% 
-  filter(n() > 1) %>% 
+starwars %>%
+  group_by(homeworld) %>%
+  filter(n() > 1) %>%
   summarise(across(where(is.numeric), mean, na.rm = TRUE), n = n())
 ```
 ## Other cool features
@@ -110,13 +110,13 @@ Why did we decide to move away from these functions in favour of `across()`?
     compute the number of rows in each group:
 
     ```{r, eval = FALSE}
-    df %>%
-      group_by(g1, g2) %>% 
-      summarise(
-        across(where(is.numeric), mean), 
-        across(where(is.factor), nlevels),
-        n = n(), 
-      )
+df %>%
+  group_by(g1, g2) %>%
+  summarise(
+    across(where(is.numeric), mean),
+    across(where(is.factor), nlevels),
+    n = n(),
+  )
     ```
 
 2.  `across()` reduces the number of functions that dplyr needs to provide. 

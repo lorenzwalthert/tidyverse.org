@@ -29,9 +29,9 @@ library(embed)
 library(keras)
 library(AmesHousing)
 
-thm <- theme_bw() + 
+thm <- theme_bw() +
   theme(
-    panel.background = element_rect(fill = "transparent", colour = NA), 
+    panel.background = element_rect(fill = "transparent", colour = NA),
     plot.background = element_rect(fill = "transparent", colour = NA),
     legend.position = "top",
     legend.background = element_rect(fill = "transparent", colour = NA),
@@ -74,19 +74,19 @@ library(tidymodels)
 library(embed)
 library(AmesHousing)
 
-ames <- 
-  make_ames() %>% 
+ames <-
+  make_ames() %>%
   # Remove quality-related predictors
   dplyr::select(-matches("Qu"))
 
 set.seed(4595)
 data_split <- initial_split(ames, strata = "Sale_Price")
 ames_train <- training(data_split)
-ames_test  <- testing(data_split)
+ames_test <- testing(data_split)
 
 theme_set(theme_bw())
 
-ggplot(ames_train, aes(x = Longitude, y = Sale_Price)) + 
+ggplot(ames_train, aes(x = Longitude, y = Sale_Price)) +
   geom_point(alpha = 0.3) +
   scale_y_log10()
 ```
@@ -95,18 +95,18 @@ Because the Iowa State University is in the center of Ames, there are discontinu
 
 ```{r ames-xgb}
 set.seed(525)
-ames_rec <- 
-  recipe(Sale_Price ~ ., data = ames_train) %>% 
-  step_log(Sale_Price, base = 10) %>% 
-  step_discretize_xgb(Longitude, outcome = "Sale_Price", id = "xgb") %>% 
+ames_rec <-
+  recipe(Sale_Price ~ ., data = ames_train) %>%
+  step_log(Sale_Price, base = 10) %>%
+  step_discretize_xgb(Longitude, outcome = "Sale_Price", id = "xgb") %>%
   prep()
 ```
 
 The `tidy()` method can be used to show the estimated breaks: 
 
 ```{r ames-xgb-tidy}
-breaks <- 
-  tidy(ames_rec, id = "xgb") %>% 
+breaks <-
+  tidy(ames_rec, id = "xgb") %>%
   pull(values)
 
 breaks
@@ -120,8 +120,8 @@ bake(ames_rec, ames_test, Longitude)
 For the test set, here are the breaks: 
 
 ```{r ames-longitude-breaks, fig.height=4.25, dev = 'svg', dev.args = list(bg = "transparent")}
-ggplot(ames_train, aes(x = Longitude, y = Sale_Price)) + 
-  geom_vline(xintercept = breaks, col = "blue", alpha = 0.7) + 
+ggplot(ames_train, aes(x = Longitude, y = Sale_Price)) +
+  geom_vline(xintercept = breaks, col = "blue", alpha = 0.7) +
   geom_point(alpha = 0.3) +
   scale_y_log10()
 ```
@@ -143,19 +143,19 @@ One alternative method for making indicator variables is [_feature hashing_](htt
 Let's look again at the Ames data. The neighborhood predictor has `r length(levels(ames$Neighborhood))` possible values. This is by no means large but it can be used to illustrate how this method works. Instead of creating `r length(levels(ames$Neighborhood)) - 1` indicator columns, let's use 10 instead. 
 
 ```{r ames-hash}
-hash_rec <- 
-  recipe(Sale_Price ~ Neighborhood, data = ames_train) %>% 
-  # For illustration only, `preserve` is used to keep the original column. 
-  step_feature_hash(Neighborhood, num_hash = 10, preserve = TRUE) %>% 
+hash_rec <-
+  recipe(Sale_Price ~ Neighborhood, data = ames_train) %>%
+  # For illustration only, `preserve` is used to keep the original column.
+  step_feature_hash(Neighborhood, num_hash = 10, preserve = TRUE) %>%
   prep()
 ```
 
 There is no actual estimation used so far. When generating the values, the hashing function is used to create the indicators: 
 
 ```{r ames-hash-whole}
-all_nhood <- 
-  ames %>% 
-  select(Neighborhood) %>% 
+all_nhood <-
+  ames %>%
+  select(Neighborhood) %>%
   distinct()
 hashed <- bake(hash_rec, all_nhood, starts_with("Neighborhood"))
 hashed
@@ -165,9 +165,11 @@ How were neighborhoods mapped to indicators in these data? Each neighborhood onl
 
 ```{r, message = FALSE, warning = FALSE}
 hashed %>%
-  tidyr::pivot_longer(cols = c(contains("hash")),
-                      names_to = "column",
-                      values_to = "values") %>%
+  tidyr::pivot_longer(
+    cols = c(contains("hash")),
+    names_to = "column",
+    values_to = "values"
+  ) %>%
   group_by(column) %>%
   summarize(num_neighborhood = sum(values))
 ```

@@ -124,16 +124,16 @@ For example, if you decide to fork-and-clone Matt Lincoln's clipr package while 
 
 ```{r, eval = FALSE}
 create_from_github("https://github.com/mdlincoln/clipr/issues")
-#> ℹ Defaulting to https Git protocol
-#> ✓ Setting `fork = TRUE`
-#> ✓ Creating '/Users/jenny/Desktop/clipr/'
-#> ✓ Forking 'mdlincoln/clipr'
-#> ✓ Cloning repo from 'https://github.com/jennybc/clipr.git' into '/Users/jenny/Desktop/clipr'
-#> ✓ Setting active project to '/Users/jenny/Desktop/clipr'
-#> ℹ Default branch is 'master'
-#> ✓ Adding 'upstream' remote: 'https://github.com/mdlincoln/clipr.git'
-#> ✓ Pulling changes from 'upstream/master' (default branch of source repo)
-#> ✓ Setting remote tracking branch for local 'master' branch to 'upstream/master'
+# > ℹ Defaulting to https Git protocol
+# > ✓ Setting `fork = TRUE`
+# > ✓ Creating '/Users/jenny/Desktop/clipr/'
+# > ✓ Forking 'mdlincoln/clipr'
+# > ✓ Cloning repo from 'https://github.com/jennybc/clipr.git' into '/Users/jenny/Desktop/clipr'
+# > ✓ Setting active project to '/Users/jenny/Desktop/clipr'
+# > ℹ Default branch is 'master'
+# > ✓ Adding 'upstream' remote: 'https://github.com/mdlincoln/clipr.git'
+# > ✓ Pulling changes from 'upstream/master' (default branch of source repo)
+# > ✓ Setting remote tracking branch for local 'master' branch to 'upstream/master'
 ```
 
 URLs are supported by the `repo_spec` argument of `create_from_github()` and `use_tidy_thanks()`.

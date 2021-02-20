@@ -36,24 +36,24 @@ library(fs)
 library(ambient)
 library(dplyr)
 noise <- long_grid(
-    x = seq(0, 1, length.out = 2000), 
-    y = seq(0, 1, length.out = 2000)
-  ) %>% mutate(
-    z = fracture(
-      noise = gen_worley, 
-      fractal = billow, 
-      octaves = 4, 
-      gain = ~ .x * 0.75,
-      frequency = ~ .x * 3,
-      x = x, 
-      y = y,
-      value = "distance",
-      seed = 12
-    )
+  x = seq(0, 1, length.out = 2000),
+  y = seq(0, 1, length.out = 2000)
+) %>% mutate(
+  z = fracture(
+    noise = gen_worley,
+    fractal = billow,
+    octaves = 4,
+    gain = ~ .x * 0.75,
+    frequency = ~ .x * 3,
+    x = x,
+    y = y,
+    value = "distance",
+    seed = 12
   )
+)
 
 # plot using png
-pngfile <- path(knitr::fig_path(),  "png_image.png")
+pngfile <- path(knitr::fig_path(), "png_image.png")
 agg_png(pngfile, 2000, 2000)
 plot(noise, z)
 invisible(dev.off())
@@ -62,7 +62,7 @@ knitr::include_graphics(pngfile)
 
 ```{r}
 # plot using jpeg
-jpegfile <- path(knitr::fig_path(),  "jpeg_image.jpeg")
+jpegfile <- path(knitr::fig_path(), "jpeg_image.jpeg")
 agg_jpeg(jpegfile, 2000, 2000)
 plot(noise, z)
 invisible(dev.off())
@@ -112,24 +112,24 @@ text <- c(
   "tracking",
   " on some word and generally mixing text with different ",
   "fonts, ",
-  "sizes,", 
+  "sizes,",
   " and styles."
-) 
-family <- c(
-  'charter', 
-  'charter', 
-  'charter', 
-  'exo 2', 
-  'charter', 
-  'charter'
 )
-italic <-  c(rep(FALSE, 5), TRUE)
+family <- c(
+  "charter",
+  "charter",
+  "charter",
+  "exo 2",
+  "charter",
+  "charter"
+)
+italic <- c(rep(FALSE, 5), TRUE)
 bold <- c(rep(FALSE, 5), TRUE)
 style <- c(rep("plain", 5), "bold.italic")
 size <- c(rep(14, 4), 24, 14)
 shape <- shape_string(
-  text, 
-  id = 1, 
+  text,
+  id = 1,
   family = family,
   italic = italic,
   bold = bold,
@@ -148,11 +148,11 @@ shape
 ```{r}
 library(grid)
 
-pngfile <- path(knitr::fig_path(),  "png_image.png")
-agg_png(pngfile, 6, 2.5, unit = 'in', res = 300)
+pngfile <- path(knitr::fig_path(), "png_image.png")
+agg_png(pngfile, 6, 2.5, unit = "in", res = 300)
 grid.text(
-  shape$shape$glyph, 
-  x = unit(0.5, "npc") + unit(shape$shape$x_offset, "pt"), 
+  shape$shape$glyph,
+  x = unit(0.5, "npc") + unit(shape$shape$x_offset, "pt"),
   y = unit(0.5, "npc") + unit(shape$shape$y_offset, "pt"),
   hjust = 0,
   vjust = 0,
